@@ -1,0 +1,52 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.label-title {
+  font-size: medium;
+  padding: 20px 0;
+  font-weight: 700;
+  color: grey;
+  display: block;
+  width: 95%;
+}
+.card-item {
+  width: 95%;
+  input {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+}
+.quantitybox {
+  input {
+    margin-bottom: 0 !important;
+  }
+}
+.priority-tips {
+  margin-bottom: 12px;
+  color: silver;
+}
+.status {
+  margin-bottom: 12px;
+  select {
+    width: 100%;
+    padding: 1.5px 0;
+  }
+}
+.product-option {
+  width: 95%;
+  margin-bottom: 12px;
+}
+.custom-price {
+  width: 95%;
+  margin-bottom: 12px;
+}
+.applyProduct {
+  display: flex;
+  flex-direction: column;
+}
+.applyChoose {
+  margin: 0 2.5%;
+}

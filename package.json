@@ -1,0 +1,24 @@
+{
+  "name": "quy-mv",
+  "version": "1.0.0",
+  "main": "web/index.js",
+  "license": "UNLICENSED",
+  "scripts": {
+    "shopify": "shopify",
+    "build": "shopify app build",
+    "dev": "shopify app dev",
+    "info": "shopify app info",
+    "generate": "shopify app generate",
+    "deploy": "shopify app deploy"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.0",
+    "@shopify/app": "3.16.3",
+    "@shopify/cli": "3.16.3",
+    "axios": "^1.1.0",
+    "classnames": "^2.3.2",
+    "graphql": "^16.6.0",
+    "sass": "^1.55.0"
+  },
+  "author": "BSS"
+}
