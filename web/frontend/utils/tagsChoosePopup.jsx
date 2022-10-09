@@ -1,81 +1,64 @@
 import {
-  Button,
   Modal,
   TextContainer,
-  ResourceList,
-  Avatar,
-  ResourceItem,
-  TextStyle,
+  Button,
   Card,
   Icon,
+  ResourceItem,
+  ResourceList,
+  Avatar,
+  TextStyle,
 } from "@shopify/polaris";
 import { SearchMajor } from "@shopify/polaris-icons";
 import { useState, useCallback, useEffect } from "react";
 
-function ProductChoosePopup({
-  data,
-  setProduct,
+function TagsChoosePopup({
+  setSelectedCollection,
   selectedItems,
   setSelectedItems,
-  productList,
+  setSelected,
+  tagArray,
 }) {
   const [active, setActive] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [searchItem, setSearchItem] = useState([]);
 
-  useEffect(() => {
-    setSearchItem(productList);
-  }, [productList]);
+  const openPopup = useCallback(() => setActive(!active), [active]);
+
+  const activator = <input onClick={openPopup} />;
 
   //search products
-  const temp = data.data.products.edges;
+  const temp = tagArray;
   const handleChangeSearchResult = () => {
-    const result = temp.filter(product =>
-      product.node.title
-        .toLowerCase()
-        .includes(searchValue.trim().toLowerCase())
+    const result = temp.filter(tag =>
+      tag.toLowerCase().includes(searchValue.trim().toLowerCase())
     );
     setSearchItem(result);
   };
-
   //ready items to render
-  var items = searchItem.map(item => {
+  const items = searchItem.map(item => {
     return {
-      id: item.node.id,
-      name: item.node.title,
-      url: item.node?.images?.edges[0]?.node?.url,
+      id: item,
+      name: item,
     };
   });
 
-  //popup control(on/off)
-  const opendPopup = useCallback(() => setActive(!active), [active]);
-
-  const activator = <input onClick={opendPopup} placeholder="Search product" />;
-
-  //Product label
-  const resourceName = {
-    singular: "product",
-    plural: "products",
-  };
-
   //Handle select item
   function addProduct() {
-    setProduct(selectedItems);
-    opendPopup();
+    setSelected(selectedItems);
+    openPopup();
   }
 
+  const resourceName = {
+    singular: "tag",
+    plural: "tags",
+  };
   //function render of resoure list
   function renderItem(item) {
-    const { id, url, name, location } = item;
-    const media = <Avatar customer size="medium" name={name} source={url} />;
+    const { id, name } = item;
 
     return (
-      <ResourceItem
-        id={id}
-        url={url}
-        media={media}
-        accessibilityLabel={`View details for ${name}`}
-      >
+      <ResourceItem id={id} accessibilityLabel={`View details for ${name}`}>
         <h3>
           <TextStyle variation="strong">{name}</TextStyle>
         </h3>
@@ -88,8 +71,8 @@ function ProductChoosePopup({
       <Modal
         activator={activator}
         open={active}
-        onClose={opendPopup}
-        title="Select specific products"
+        onClose={openPopup}
+        title="Select tag"
         primaryAction={{
           content: "Select",
           onAction: addProduct,
@@ -137,4 +120,4 @@ function ProductChoosePopup({
   );
 }
 
-export default ProductChoosePopup;
+export default TagsChoosePopup;

@@ -15,31 +15,48 @@ import { useState, useCallback } from "react";
 import styles from "./productChoose.module.scss";
 import classNames from "classnames/bind";
 import ProductChoosePopup from "../../utils/productChoosePopup";
-import axios from "axios";
 import { useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
-import fakeData from "../../utils/fakeData";
+import Products from "../../utils/getProducts";
+import CollectionChoose from "../collectionChoose";
+import tagArray from "../../utils/getTag";
+import TagsChoose from "../tagsChoose";
 
 const cx = classNames.bind(styles);
 
 function ProductCollectionChooseList() {
-  const [selectedProduct, setSelectedProduct] = useState([]);
-  const [productList, setProductList] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
-  console.log(productList);
+  const [selectedProduct, setSelectedProduct] = useState([]); //chi chua cac id duoc select, do thu vien
+  const [productList, setProductList] = useState([]); //product cuoi cung duoc chon
+  const [selectedItems, setSelectedItems] = useState([]); //state san pham duoc chon trong popup, khi click select moi set vao selectProduct
+  const [selectedProductsSingle, setSelectedProductsSingle] = useState([]); //gom cac san pham duoc chon tu specific
+  const [selectedProductsFromCollection, setSelectedProductsFromCollection] =
+    useState([]); // gom cac san pham duoc chon tu collection
+  const [selectedProductFromTag, setSelectedProductFromTag] = useState([]);
 
+  const [finalSelectedProduct, setFinalSelectedProduct] = useState([]);
+
+  //loc lai cac gia tri tu id duoc chon
   useEffect(() => {
-    const result = fakeData.data.products.edges.filter(product =>
+    const result = Products.data.products.edges.filter(product =>
       selectedProduct.includes(product.node.id)
     );
-
     setProductList(result);
   }, [selectedProduct]);
 
-  //try call API
+  //loc ra cac thuoc tinh cua product de thiet lap discount
+  useEffect(() => {
+    const products = productList.map(item => {
+      return {
+        id: item.node.id,
+        title: item.node.title,
+        url: item.node?.images?.edges[0]?.node?.url,
+        price: item.node?.priceRangeV2?.minVariantPrice?.amount,
+      };
+    });
+    setSelectedProductsSingle(products);
+  }, [productList]);
 
-  //Chooselist
-  const [selected, setSelected] = useState(["none"]);
+  //Chooselist all, specific, collection, tag
+  const [selected, setSelected] = useState(["all"]);
   const [textFieldValue, setTextFieldValue] = useState("");
   const handleChoiceListChange = useCallback(value => setSelected(value), []);
   const handleTextFieldChange = useCallback(
@@ -47,15 +64,33 @@ function ProductCollectionChooseList() {
     []
   );
 
+  //save selected product to localStoreage
+  switch (selected) {
+    case "all":
+      //
+      break;
+    case "specific":
+      //
+      break;
+    case "collection":
+      //
+      break;
+    case "tags":
+      //
+      break;
+    default:
+  }
+
   const ProductChoose = isSelected => {
     return (
       isSelected && (
         <div className={cx("wrapper")}>
           <ProductChoosePopup
-            data={fakeData}
+            data={Products}
             setProduct={setSelectedProduct}
             selectedItems={selectedItems}
             setSelectedItems={setSelectedItems}
+            productList={productList}
           />
           <ResourceList
             resourceName={{ singular: "customer", plural: "customers" }}
@@ -103,9 +138,7 @@ function ProductCollectionChooseList() {
       )
     );
   };
-  const collectionChoose = isSelected => {
-    return isSelected && <div className={cx("wrapper")}></div>;
-  };
+
   return (
     <div>
       <ChoiceList
@@ -120,14 +153,28 @@ function ProductCollectionChooseList() {
             label: "Product collection",
             value: "collection",
             renderChildren: isSelected => {
-              return isSelected && <h1>Collection</h1>;
+              return (
+                isSelected && (
+                  <CollectionChoose
+                    setSelectedProductsFromCollection={
+                      setSelectedProductsFromCollection
+                    }
+                  />
+                )
+              );
             },
           },
           {
             label: "Product tags",
-            value: "tag",
+            value: "tags",
             renderChildren: isSelected => {
-              return isSelected && <h1>Tags</h1>;
+              return (
+                isSelected && (
+                  <TagsChoose
+                    setSelectedProductFromTag={setSelectedProductFromTag}
+                  />
+                )
+              );
             },
           },
         ]}

@@ -1,3 +1,22 @@
+.wrapper {
+  display: flex;
+}
+.input-container {
+  width: 70%;
+}
+.output-container {
+  flex: 1;
+  height: 400px;
+  background-color: blue;
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+}
+.input-container + .output-container {
+  margin-left: 1.5vw;
+}
 .card {
   display: flex;
   flex-direction: column;

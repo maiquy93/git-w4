@@ -1,69 +1,62 @@
 import {
-  Button,
   Modal,
   TextContainer,
-  ResourceList,
-  Avatar,
-  ResourceItem,
-  TextStyle,
+  Button,
   Card,
   Icon,
+  ResourceItem,
+  ResourceList,
+  Avatar,
+  TextStyle,
 } from "@shopify/polaris";
 import { SearchMajor } from "@shopify/polaris-icons";
 import { useState, useCallback, useEffect } from "react";
 
-function ProductChoosePopup({
-  data,
-  setProduct,
+function CollectionChoosePopup({
+  collections,
+  selectedCollection,
+  setSelectedCollection,
   selectedItems,
-  setSelectedItems,
-  productList,
+  setSelectItems,
+  collectionList,
 }) {
   const [active, setActive] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [searchItem, setSearchItem] = useState([]);
 
-  useEffect(() => {
-    setSearchItem(productList);
-  }, [productList]);
+  const openPopup = useCallback(() => setActive(!active), [active]);
+
+  const activator = <input onClick={openPopup} />;
 
   //search products
-  const temp = data.data.products.edges;
+  const temp = collections.data.collections.edges;
   const handleChangeSearchResult = () => {
-    const result = temp.filter(product =>
-      product.node.title
+    const result = temp.filter(collection =>
+      collection.node.title
         .toLowerCase()
         .includes(searchValue.trim().toLowerCase())
     );
     setSearchItem(result);
   };
-
   //ready items to render
   var items = searchItem.map(item => {
     return {
       id: item.node.id,
       name: item.node.title,
-      url: item.node?.images?.edges[0]?.node?.url,
+      url: item.node?.images?.url,
     };
   });
 
-  //popup control(on/off)
-  const opendPopup = useCallback(() => setActive(!active), [active]);
+  //Handle select item
+  function addProduct() {
+    setSelectedCollection(selectedItems);
+    openPopup();
+  }
 
-  const activator = <input onClick={opendPopup} placeholder="Search product" />;
-
-  //Product label
   const resourceName = {
     singular: "product",
     plural: "products",
   };
-
-  //Handle select item
-  function addProduct() {
-    setProduct(selectedItems);
-    opendPopup();
-  }
-
   //function render of resoure list
   function renderItem(item) {
     const { id, url, name, location } = item;
@@ -88,7 +81,7 @@ function ProductChoosePopup({
       <Modal
         activator={activator}
         open={active}
-        onClose={opendPopup}
+        onClose={openPopup}
         title="Select specific products"
         primaryAction={{
           content: "Select",
@@ -127,7 +120,7 @@ function ProductChoosePopup({
               items={items}
               renderItem={renderItem}
               selectedItems={selectedItems}
-              onSelectionChange={setSelectedItems}
+              onSelectionChange={setSelectItems}
               selectable
             />
           </Card>
@@ -137,4 +130,4 @@ function ProductChoosePopup({
   );
 }
 
-export default ProductChoosePopup;
+export default CollectionChoosePopup;

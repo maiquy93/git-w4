@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const fakeData = {
+const Products = {
   data: {
     products: {
       edges: [
@@ -8,6 +8,7 @@ const fakeData = {
           node: {
             title: "T-shirt",
             id: "gid://shopify/Product/8107252089072",
+            tags: ["clothes", "Hot summer"],
             images: {
               edges: [
                 {
@@ -28,6 +29,7 @@ const fakeData = {
           node: {
             title: "Male pant",
             id: "gid://shopify/Product/8108089737456",
+            tags: ["clothes", "male pant", "pant"],
             images: {
               edges: [
                 {
@@ -48,6 +50,7 @@ const fakeData = {
           node: {
             title: "Pillow",
             id: "gid://shopify/Product/8108096225520",
+            tags: ["bed room", "pillow"],
             images: {
               edges: [
                 {
@@ -68,6 +71,7 @@ const fakeData = {
           node: {
             title: "Google gift code",
             id: "gid://shopify/Product/8108099109104",
+            tags: ["cash", "pin code"],
             images: {
               edges: [
                 {
@@ -88,6 +92,7 @@ const fakeData = {
           node: {
             title: "Razer global pin code",
             id: "gid://shopify/Product/8108101239024",
+            tags: [],
             images: {
               edges: [
                 {
@@ -108,6 +113,7 @@ const fakeData = {
           node: {
             title: "10% sale for all product",
             id: "gid://shopify/Product/8108126208240",
+            tags: ["Hot summer"],
             images: {
               edges: [
                 {
@@ -128,6 +134,7 @@ const fakeData = {
           node: {
             title: "Swiming Pant - Male",
             id: "gid://shopify/Product/8108201312496",
+            tags: ["Hot summer"],
             images: {
               edges: [
                 {
@@ -148,6 +155,7 @@ const fakeData = {
           node: {
             title: "Divi Engine String Bag (Big Logo)",
             id: "gid://shopify/Product/8108219072752",
+            tags: [],
             images: {
               edges: [],
             },
@@ -162,6 +170,7 @@ const fakeData = {
           node: {
             title: "Divi Engine String Bag (Small Logos)",
             id: "gid://shopify/Product/8108219105520",
+            tags: [],
             images: {
               edges: [],
             },
@@ -176,6 +185,7 @@ const fakeData = {
           node: {
             title: "Brand Buttons",
             id: "gid://shopify/Product/8108219138288",
+            tags: [],
             images: {
               edges: [
                 {
@@ -208,38 +218,4 @@ const fakeData = {
   },
 };
 
-// useEffect(() => {
-//   var myHeaders = new Headers();
-//   myHeaders.append(
-//     "X-Shopify-Access-Token",
-//     "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"
-//   );
-//   myHeaders.append("Content-Type", "application/json");
-//   myHeaders.append(
-//     "Cookie",
-//     "_landing_page=%2Fpassword; _orig_referrer=https%3A%2F%2Ftraining-quy-mv-store.myshopify.com%2F%2Fshopify%2FProduct%2F8108101239024; _shopify_y=69508a70-1344-4bdb-a6bb-84ebdae6b92d; _y=69508a70-1344-4bdb-a6bb-84ebdae6b92d; cart_currency=VND; localization=VN; secure_customer_sig="
-//   );
-
-//   var graphql = JSON.stringify({
-//     query:
-//       "{\r\n	products(first:5) {\r\n    edges{\r\n      node{\r\n        title\r\n      }\r\n    }\r\n	}\r\n}",
-//     variables: {},
-//   });
-//   var requestOptions = {
-//     method: "POST",
-//     mode: "no-cors",
-//     headers: myHeaders,
-//     body: graphql,
-//     redirect: "follow",
-//   };
-
-//   fetch(
-//     "https://training-quy-mv-store.myshopify.com/admin/api/2022-10/graphql.json",
-//     requestOptions
-//   )
-//     .then(response => response.text())
-//     .then(result => console.log(result))
-//     .catch(error => console.log("error", error));
-// }, []);
-
-export default fakeData;
+export default Products;

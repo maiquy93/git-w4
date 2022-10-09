@@ -1,0 +1,11 @@
+.wrapper {
+  width: 100%;
+  input {
+    padding: 3px 5px;
+    outline: none;
+    &:focus {
+      outline: auto;
+      outline-color: rgba(10, 107, 185, 0.575);
+    }
+  }
+}
