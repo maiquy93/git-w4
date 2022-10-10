@@ -18,6 +18,7 @@ export default function HomePage() {
   const [status, setStatus] = useState("enable");
   const [emptyName, setEmptyName] = useState(false);
   const [emptyPriority, setEmptyPriority] = useState(false);
+  const [incorectPriority, setIncorectPriority] = useState(false);
 
   //choose product
   const [finalSelectedProduct, setFinalSelectedProduct] = useState([]);
@@ -120,13 +121,15 @@ export default function HomePage() {
   //handle click create
   const handleCreate = () => {
     //validate
+    const priorityReg = "^(0?[1-9]|[1-9][0-9])$";
     const regNumber = "^[0-9]*[1-9][0-9]*$";
-    const percentReg = "^0*(?:[1-9][0-9]?|100)$";
+    const percentReg = "^(100|([0-9][0-9]?(.[0-9]+)?))$";
     if (finalSelectedProduct.length == 0) {
       alert("Please select a product to apply equal");
     }
     if (!name) setEmptyName(true);
     if (!priority) setEmptyPriority(true);
+    if (!priority.match(priorityReg)) setIncorectPriority(true);
     if (selected == "single" && !singleAmount) setEmptySingle(true);
     if (selected == "fixed" && !fixedAmount) setEmptyFixed(true);
     if (selected == "percent" && !percentAmount) setEmptyPercent(true);
@@ -144,6 +147,7 @@ export default function HomePage() {
       priority &&
       singleAmount &&
       singleAmount.match(regNumber) &&
+      priority.match(priorityReg) &&
       finalSelectedProduct.length > 0
     ) {
       const temp = {
@@ -161,6 +165,7 @@ export default function HomePage() {
       selected == "fixed" &&
       name &&
       priority &&
+      priority.match(priorityReg) &&
       fixedAmount.match(regNumber) &&
       finalSelectedProduct.length > 0
     ) {
@@ -179,6 +184,7 @@ export default function HomePage() {
       selected == "percent" &&
       name &&
       priority &&
+      priority.match(priorityReg) &&
       percentAmount.match(percentReg) &&
       finalSelectedProduct.length > 0
     ) {
@@ -238,12 +244,16 @@ export default function HomePage() {
                       onChange={e => {
                         setPriority(e.target.value);
                         setEmptyPriority(false);
+                        setIncorectPriority(false);
                       }}
                     />
                     {emptyPriority && (
                       <span className={cx("warning")}>
                         Priority cannot empty
                       </span>
+                    )}
+                    {incorectPriority && (
+                      <span className={cx("warning")}>Priority incorect</span>
                     )}
 
                     <p className={cx("priority-tips")}>

@@ -16,27 +16,45 @@ import styles from "./productChoose.module.scss";
 import classNames from "classnames/bind";
 import ProductChoosePopup from "../../utils/productChoosePopup";
 import { useEffect } from "react";
-import Products from "../../utils/getProducts";
+// import Products from "../../utils/getProducts";
 import CollectionChoose from "../collectionChoose";
 
 import TagsChoose from "../tagsChoose";
 import { useMemo } from "react";
+import { uniqBy } from "lodash";
 
 const cx = classNames.bind(styles);
-await Products();
 
 function ProductCollectionChooseList({ setFinalSelectedProduct }) {
+  const [productsData, setProductsData] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState([]); //chi chua cac id duoc select, do thu vien
   const [productList, setProductList] = useState([]); //product cuoi cung duoc chon
   const [selectedItems, setSelectedItems] = useState([]); //state san pham duoc chon trong popup, khi click select moi set vao selectProduct
   const [selectedProductsSingle, setSelectedProductsSingle] = useState([]); //gom cac san pham duoc chon tu specific
   const [selectedProductsFromCollection, setSelectedProductsFromCollection] =
     useState([]); // gom cac san pham duoc chon tu collection
+  // const [
+  //   selectedProductsFromCollectionNoDup,
+  //   setSelectedProductsFromCollectionNoDup,
+  // ] = useState([]);
+
   const [selectedProductFromTag, setSelectedProductFromTag] = useState([]);
+
+  // const productsCollection = useMemo(() => {
+  //   const result = uniqBy(selectedProductsFromCollection, "id");
+  //   return result;
+  // }, [selectedProductsFromCollection]);
+
+  //call API
+  useEffect(() => {
+    fetch("http://localhost:8000/getproducts")
+      .then(res => res.json())
+      .then(data => setProductsData(data));
+  }, []);
 
   //loc lai cac gia tri tu id duoc chon
   useEffect(() => {
-    const result = Products?.data?.products?.edges.filter(product =>
+    const result = productsData?.data?.products?.edges.filter(product =>
       selectedProduct.includes(product.node.id)
     );
     setProductList(result);
@@ -57,7 +75,7 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
 
   //loc all product
   const allProducts = useMemo(() => {
-    let temp = Products?.data?.products?.edges;
+    let temp = productsData?.data?.products?.edges;
     let all = temp?.map(item => {
       return {
         id: item.node.id,
@@ -67,8 +85,8 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
       };
     });
     return all;
-  }, []);
-  console.log(allProducts);
+  }, [productsData]);
+  // console.log(allProducts);
 
   //Chooselist all, specific, collection, tag
   const [selected, setSelected] = useState(["all"]);
@@ -88,7 +106,7 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
       setFinalSelectedProduct(selectedProductsSingle);
     }
     if (selected == "collection") {
-      setFinalSelectedProduct(selectedProductsFromCollection);
+      setFinalSelectedProduct(uniqBy(selectedProductsFromCollection, "id"));
     }
 
     if (selected == "tags") {
@@ -107,7 +125,7 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
       isSelected && (
         <div className={cx("wrapper")}>
           <ProductChoosePopup
-            data={Products}
+            data={productsData}
             setProduct={setSelectedProduct}
             selectedItems={selectedItems}
             setSelectedItems={setSelectedItems}

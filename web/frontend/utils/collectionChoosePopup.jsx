@@ -29,7 +29,7 @@ function CollectionChoosePopup({
   const activator = <input onClick={openPopup} />;
 
   //search products
-  const temp = collections.data.collections.edges;
+  const temp = collections?.data?.collections?.edges;
   const handleChangeSearchResult = () => {
     const result = temp.filter(collection =>
       collection.node.title

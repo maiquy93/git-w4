@@ -21,9 +21,17 @@ import Collections from "../../utils/getCollections";
 const cx = classNames.bind(styles);
 
 function CollectionChoose({ setSelectedProductsFromCollection }) {
+  const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState([]); //chi chua cac id duoc select, do thu vien
   const [collectionList, setCollectionList] = useState([]); //collections cuoi cung duoc chon
   const [selectedItems, setSelectedItems] = useState([]); //state san pham duoc chon trong popup, khi click select moi set vao selectProduct
+
+  //Call API
+  useEffect(() => {
+    fetch("http://localhost:8000/getcollections")
+      .then(res => res.json())
+      .then(data => setCollections(data));
+  }, []);
 
   //loc lai cac gia tri tu id duoc chon
   useEffect(() => {
