@@ -42,7 +42,7 @@ function TagsChoose({ setSelectedProductFromTag }) {
 
   //loc ra cac product tu tags
   let result = useMemo(() => {
-    const temp = Products.data.products.edges;
+    const temp = Products?.data?.products?.edges;
     let firstFilter = [];
     selectedItems.forEach(tag => {
       temp.forEach(product => {
@@ -56,6 +56,7 @@ function TagsChoose({ setSelectedProductFromTag }) {
         id: item.id,
         title: item.title,
         url: item.images.edges[0].node.url,
+        price: item?.priceRangeV2?.minVariantPrice.amount,
       };
     });
     return result;

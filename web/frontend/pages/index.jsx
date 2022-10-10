@@ -1,36 +1,204 @@
-import {
-  Card,
-  Page,
-  Layout,
-  Modal,
-  TextContainer,
-  TextField,
-  ChoiceList,
-} from "@shopify/polaris";
-
+import { Card, Page, Layout } from "@shopify/polaris";
 import styles from "../CSS/mystyle.module.scss";
 import classNames from "classnames/bind";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useState, useCallback } from "react";
 import ProductCollectionChooseList from "../components/productChoose/productCollectionChooseList";
 import CustomPrice from "../components/customPrice/customPrice";
+import { v4 as uuidv4 } from "uuid";
+import draft from "../store/drarf";
+import { useEffect } from "react";
 
 const cx = classNames.bind(styles);
 
 export default function HomePage() {
-  //choose list
-  const [selected, setSelected] = useState(["all"]);
-  const [textFieldValue, setTextFieldValue] = useState("");
-  const handleChoiceListChange = useCallback(value => setSelected(value), []);
+  //general
+  const [name, setName] = useState("");
+  const [priority, setPriority] = useState(null);
+  const [status, setStatus] = useState("enable");
+  const [emptyName, setEmptyName] = useState(false);
+  const [emptyPriority, setEmptyPriority] = useState(false);
 
-  const handleTextFieldChange = useCallback(
-    value => setTextFieldValue(value),
-    []
-  );
+  //choose product
+  const [finalSelectedProduct, setFinalSelectedProduct] = useState([]);
+  // console.log(finalSelectedProduct);
 
-  //popup
-  const [active, setActive] = useState(true);
-  const handleChange = useCallback(() => setActive(!active), [active]);
+  //Custom price
+  const [singleAmount, setSingleAmount] = useState("");
+  const [fixedAmount, setFixedAmount] = useState("");
+  const [percentAmount, setPercentAmount] = useState("");
+  const [emptySingle, setEmptySingle] = useState(false);
+  const [emptyFixed, setEmptyFixed] = useState(false);
+  const [emptyPercent, setEmptyPercent] = useState(false);
+  const [singleAmountIncorect, setSingleAmountIncorect] = useState(false);
+  const [fixedAmountIncorect, setFixedAmountIncorect] = useState(false);
+  const [percentAmountIncorect, setPercentAmountIncorect] = useState(false);
+
+  const [selected, setSelected] = useState(["single"]);
+
+  //table data
+  const [currentData, setCurrentData] = useState([]);
+  const [dataRender, setDataRender] = useState([]);
+  // console.log("currentData", currentData);
+  // console.log(dataRender);
+
+  const singleCalculator = (price, amount) => {
+    if (amount <= price) {
+      return amount;
+    } else return price;
+  };
+  const fixedCalculator = (price, amount) => {
+    if (amount <= price) {
+      return price - amount;
+    } else return 0;
+  };
+  const percentCalculator = (price, amount) => {
+    return price - (amount * price) / 100;
+  };
+
+  useEffect(() => {
+    if (currentData.status == "enable") {
+      if (currentData.type == "single") {
+        const temp = currentData.products.map(item => {
+          return {
+            id: item.id,
+            url: item.url,
+            title: item.title,
+            price: singleCalculator(
+              Number(item.price),
+              Number(currentData.amount)
+            ),
+            costPrice: Number(item.price),
+          };
+        });
+        setDataRender(temp);
+      }
+      if (currentData.type == "fixed") {
+        const temp = currentData.products.map(item => {
+          return {
+            id: item.id,
+            url: item.url,
+            title: item.title,
+            price: fixedCalculator(
+              Number(item.price),
+              Number(currentData.amount)
+            ),
+            costPrice: Number(item.price),
+          };
+        });
+        setDataRender(temp);
+      }
+      if (currentData.type == "percent") {
+        const temp = currentData.products.map(item => {
+          return {
+            id: item.id,
+            url: item.url,
+            title: item.title,
+            price: percentCalculator(
+              Number(item.price),
+              Number(currentData.amount)
+            ),
+            costPrice: Number(item.price),
+          };
+        });
+        setDataRender(temp);
+      }
+    } else {
+      const temp = currentData?.products?.map(item => {
+        return {
+          id: item.id,
+          url: item.url,
+          title: item.title,
+          price: Number(item.price),
+          costPrice: Number(item.price),
+        };
+      });
+      setDataRender(temp);
+    }
+  }, [currentData]);
+
+  //handle click create
+  const handleCreate = () => {
+    //validate
+    const regNumber = "^[0-9]*[1-9][0-9]*$";
+    const percentReg = "^0*(?:[1-9][0-9]?|100)$";
+    if (finalSelectedProduct.length == 0) {
+      alert("Please select a product to apply equal");
+    }
+    if (!name) setEmptyName(true);
+    if (!priority) setEmptyPriority(true);
+    if (selected == "single" && !singleAmount) setEmptySingle(true);
+    if (selected == "fixed" && !fixedAmount) setEmptyFixed(true);
+    if (selected == "percent" && !percentAmount) setEmptyPercent(true);
+    if (selected == "single" && !singleAmount.match(regNumber))
+      setSingleAmountIncorect(true);
+    if (selected == "fixed" && !fixedAmount.match(regNumber))
+      setFixedAmountIncorect(true);
+    if (selected == "percent" && !percentAmount.match(percentReg))
+      setPercentAmountIncorect(true);
+
+    //create rule
+    if (
+      selected == "single" &&
+      name &&
+      priority &&
+      singleAmount &&
+      singleAmount.match(regNumber) &&
+      finalSelectedProduct.length > 0
+    ) {
+      const temp = {
+        id: uuidv4(),
+        name: name,
+        priority: priority,
+        status: status,
+        type: selected,
+        amount: singleAmount,
+        products: finalSelectedProduct,
+      };
+      setCurrentData(temp);
+    }
+    if (
+      selected == "fixed" &&
+      name &&
+      priority &&
+      fixedAmount.match(regNumber) &&
+      finalSelectedProduct.length > 0
+    ) {
+      const temp = {
+        id: uuidv4(),
+        name: name,
+        priority: priority,
+        status: status,
+        type: selected,
+        amount: fixedAmount,
+        products: finalSelectedProduct,
+      };
+      setCurrentData(temp);
+    }
+    if (
+      selected == "percent" &&
+      name &&
+      priority &&
+      percentAmount.match(percentReg) &&
+      finalSelectedProduct.length > 0
+    ) {
+      const temp = {
+        id: uuidv4(),
+        name: name,
+        priority: priority,
+        status: status,
+        type: selected,
+        amount: percentAmount,
+        products: finalSelectedProduct,
+      };
+      setCurrentData(temp);
+    }
+  };
+  //handle select rule
+  const handleSelect = id => {
+    const temp = draft.filter(rule => rule.id === id);
+    setCurrentData(temp[0]);
+  };
 
   return (
     <Page fullWidth>
@@ -46,17 +214,37 @@ export default function HomePage() {
                   </label>
                   <div className={cx("card-item", "namebox")}>
                     <label htmlFor="name">Name</label>
-                    <input type="text" id="name" name="name" />
+                    <input
+                      type="text"
+                      id="name"
+                      value={name}
+                      onChange={e => {
+                        setName(e.target.value);
+                        setEmptyName(false);
+                      }}
+                    />
+                    {emptyName && (
+                      <span className={cx("warning")}>Name can not empty</span>
+                    )}
                   </div>
                   <div className={cx("card-item", "quantitybox")}>
                     <label htmlFor="quantity">Priority</label>
                     <input
                       type="number"
                       id="quantity"
-                      name="quantity"
                       min="0"
                       max="99"
+                      value={priority}
+                      onChange={e => {
+                        setPriority(e.target.value);
+                        setEmptyPriority(false);
+                      }}
                     />
+                    {emptyPriority && (
+                      <span className={cx("warning")}>
+                        Priority cannot empty
+                      </span>
+                    )}
 
                     <p className={cx("priority-tips")}>
                       Please enter an integer from 0 to 99.0 is the highest
@@ -65,7 +253,14 @@ export default function HomePage() {
                   </div>
                   <div className={cx("card-item", "status")}>
                     <label htmlFor="hall">Status</label>
-                    <select name="hall" id="hall">
+                    <select
+                      name="hall"
+                      id="hall"
+                      value={status}
+                      onChange={e => {
+                        setStatus(e.target.value);
+                      }}
+                    >
                       <option value="enable">Enable</option>
                       <option value="disable">Disable</option>
                     </select>
@@ -77,7 +272,10 @@ export default function HomePage() {
                   <label className={cx("label-title")}>Apply to Products</label>
                   <div className={cx("card-item")}>
                     <div className={cx("custom-price")}>
-                      <ProductCollectionChooseList />
+                      <ProductCollectionChooseList
+                        finalSelectedProduct={finalSelectedProduct}
+                        setFinalSelectedProduct={setFinalSelectedProduct}
+                      />
                     </div>
                   </div>
                 </div>
@@ -86,17 +284,118 @@ export default function HomePage() {
                 <div className={cx("card")}>
                   <label className={cx("label-title")}>Custom Prices</label>
                   <div className={cx("custom-price")}>
-                    <div style={{ height: "150px", width: "100%" }}>
-                      <CustomPrice />
+                    <div style={{ width: "100%" }}>
+                      <CustomPrice
+                        singleAmount={singleAmount}
+                        setSingleAmount={setSingleAmount}
+                        emptySingle={emptySingle}
+                        setEmptySingle={setEmptySingle}
+                        fixedAmount={fixedAmount}
+                        setFixedAmount={setFixedAmount}
+                        emptyFixed={emptyFixed}
+                        setEmptyFixed={setEmptyFixed}
+                        percentAmount={percentAmount}
+                        setPercentAmount={setPercentAmount}
+                        emptyPercent={emptyPercent}
+                        setEmptyPercent={setEmptyPercent}
+                        selected={selected}
+                        setSelected={setSelected}
+                        singleAmountIncorect={singleAmountIncorect}
+                        setSingleAmountIncorect={setSingleAmountIncorect}
+                        fixedAmountIncorect={fixedAmountIncorect}
+                        setFixedAmountIncorect={setFixedAmountIncorect}
+                        percentAmountIncorect={percentAmountIncorect}
+                        setPercentAmountIncorect={setPercentAmountIncorect}
+                      />
                     </div>
                   </div>
+                </div>
+                <div style={{ display: "flex" }}>
+                  <div style={{ width: "80%" }}></div>
+                  <button
+                    style={{
+                      display: "block",
+                      flex: "1",
+                      marginBottom: "2vh",
+                      margin: "2vh 3%",
+                      border: "none",
+                      color: "#fff",
+                      backgroundColor: "green",
+                      padding: "5px 10px",
+                      borderRadius: "5px",
+                      fontWeight: "600",
+                    }}
+                    onClick={handleCreate}
+                  >
+                    Create
+                  </button>
+                  <button
+                    style={{
+                      display: "block",
+                      flex: "1",
+                      marginBottom: "2vh",
+                      margin: "2vh 3%",
+                      border: "none",
+                      color: "#fff",
+                      backgroundColor: "DarkCyan",
+                      padding: "5px 10px",
+                      borderRadius: "5px",
+                      fontWeight: "600",
+                    }}
+                    onClick={handleCreate}
+                  >
+                    Preview
+                  </button>
+                </div>
+              </Card>
+            </Layout.Section>
+            <Layout.Section>
+              <Card>
+                <label
+                  className={cx("label-title")}
+                  style={{ marginLeft: "20px" }}
+                >
+                  Pricing Rule Preview
+                </label>
+                <div className={cx("pricing-show")}>
+                  {draft.map(rule => {
+                    return (
+                      <div className={cx("rule-box")}>
+                        <button onClick={() => handleSelect(rule.id)}>
+                          {rule.name}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </Card>
             </Layout.Section>
           </Layout>
         </div>
         <div className={cx("output-container")}>
-          <h1>Hello</h1>
+          <div className={cx("table-title")}>{`Product pricing detail for ${
+            currentData.name || "Choose one "
+          }`}</div>
+          <table className={cx("table")}>
+            <thead>
+              <tr>
+                <td>Title</td>
+                <td>Modified Price</td>
+                <td>Cost Price</td>
+              </tr>
+            </thead>
+            <tbody>
+              {dataRender?.map(product => {
+                return (
+                  <tr>
+                    <td>{product?.title}</td>
+                    <td>{product?.price}</td>
+                    <td>{product?.costPrice}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </Page>

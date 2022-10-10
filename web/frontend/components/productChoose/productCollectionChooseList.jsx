@@ -18,12 +18,14 @@ import ProductChoosePopup from "../../utils/productChoosePopup";
 import { useEffect } from "react";
 import Products from "../../utils/getProducts";
 import CollectionChoose from "../collectionChoose";
-import tagArray from "../../utils/getTag";
+
 import TagsChoose from "../tagsChoose";
+import { useMemo } from "react";
 
 const cx = classNames.bind(styles);
+await Products();
 
-function ProductCollectionChooseList() {
+function ProductCollectionChooseList({ setFinalSelectedProduct }) {
   const [selectedProduct, setSelectedProduct] = useState([]); //chi chua cac id duoc select, do thu vien
   const [productList, setProductList] = useState([]); //product cuoi cung duoc chon
   const [selectedItems, setSelectedItems] = useState([]); //state san pham duoc chon trong popup, khi click select moi set vao selectProduct
@@ -32,19 +34,17 @@ function ProductCollectionChooseList() {
     useState([]); // gom cac san pham duoc chon tu collection
   const [selectedProductFromTag, setSelectedProductFromTag] = useState([]);
 
-  const [finalSelectedProduct, setFinalSelectedProduct] = useState([]);
-
   //loc lai cac gia tri tu id duoc chon
   useEffect(() => {
-    const result = Products.data.products.edges.filter(product =>
+    const result = Products?.data?.products?.edges.filter(product =>
       selectedProduct.includes(product.node.id)
     );
     setProductList(result);
   }, [selectedProduct]);
 
-  //loc ra cac thuoc tinh cua product de thiet lap discount
+  //loc ra cac thuoc tinh cua specific product de thiet lap discount
   useEffect(() => {
-    const products = productList.map(item => {
+    const products = productList?.map(item => {
       return {
         id: item.node.id,
         title: item.node.title,
@@ -55,6 +55,21 @@ function ProductCollectionChooseList() {
     setSelectedProductsSingle(products);
   }, [productList]);
 
+  //loc all product
+  const allProducts = useMemo(() => {
+    let temp = Products?.data?.products?.edges;
+    let all = temp?.map(item => {
+      return {
+        id: item.node.id,
+        title: item.node.title,
+        url: item.node?.images?.edges[0]?.node?.url,
+        price: item.node?.priceRangeV2?.minVariantPrice?.amount,
+      };
+    });
+    return all;
+  }, []);
+  console.log(allProducts);
+
   //Chooselist all, specific, collection, tag
   const [selected, setSelected] = useState(["all"]);
   const [textFieldValue, setTextFieldValue] = useState("");
@@ -63,23 +78,29 @@ function ProductCollectionChooseList() {
     value => setTextFieldValue(value),
     []
   );
+  //set final selected product
+  // console.log(allProducts);
+  useEffect(() => {
+    if (selected == "all") {
+      setFinalSelectedProduct(allProducts);
+    }
+    if (selected == "specific") {
+      setFinalSelectedProduct(selectedProductsSingle);
+    }
+    if (selected == "collection") {
+      setFinalSelectedProduct(selectedProductsFromCollection);
+    }
 
-  //save selected product to localStoreage
-  switch (selected) {
-    case "all":
-      //
-      break;
-    case "specific":
-      //
-      break;
-    case "collection":
-      //
-      break;
-    case "tags":
-      //
-      break;
-    default:
-  }
+    if (selected == "tags") {
+      setFinalSelectedProduct(selectedProductFromTag);
+    }
+  }, [
+    selected,
+    selectedProductsSingle,
+    selectedProductsFromCollection,
+    selectedProductFromTag,
+    allProducts,
+  ]);
 
   const ProductChoose = isSelected => {
     return (

@@ -1,29 +1,33 @@
 import { TextField, ChoiceList } from "@shopify/polaris";
 import { useState, useCallback } from "react";
 
-function CustomPrice() {
-  const [selected, setSelected] = useState(["single"]);
-  const [textFieldValue, setTextFieldValue] = useState("");
-
+function CustomPrice({
+  singleAmount,
+  setSingleAmount,
+  emptySingle,
+  setEmptySingle,
+  fixedAmount,
+  setFixedAmount,
+  emptyFixed,
+  setEmptyFixed,
+  percentAmount,
+  setPercentAmount,
+  emptyPercent,
+  setEmptyPercent,
+  selected,
+  setSelected,
+  singleAmountIncorect,
+  setSingleAmountIncorect,
+  fixedAmountIncorect,
+  setFixedAmountIncorect,
+  percentAmountIncorect,
+  setPercentAmountIncorect,
+}) {
   const handleChoiceListChange = useCallback(value => setSelected(value), []);
 
   const handleTextFieldChange = useCallback(
     value => setTextFieldValue(value),
     []
-  );
-
-  const renderChildren = useCallback(
-    isSelected =>
-      isSelected && (
-        <TextField
-          label="Minimum Quantity"
-          labelHidden
-          onChange={handleTextFieldChange}
-          value={textFieldValue}
-          autoComplete="off"
-        />
-      ),
-    [handleTextFieldChange, textFieldValue]
   );
 
   return (
@@ -42,8 +46,23 @@ function CustomPrice() {
                     <input
                       id="amount"
                       placeholder="0₫"
+                      type="number"
                       style={{ width: "100%", padding: "5px 10px" }}
+                      value={singleAmount}
+                      onChange={e => {
+                        setSingleAmount(e.target.value);
+                        setEmptySingle(false);
+                        setSingleAmountIncorect(false);
+                      }}
                     />
+                    {singleAmountIncorect && (
+                      <span style={{ color: "red" }}>Amount incorect</span>
+                    )}
+                    {emptySingle && (
+                      <span style={{ color: "red" }}>
+                        This field can be not empty
+                      </span>
+                    )}
                   </div>
                 )
               );
@@ -60,10 +79,25 @@ function CustomPrice() {
                     <label htmlFor="amount">Amount</label>
                     <br />
                     <input
+                      type="number"
                       id="amount"
+                      value={fixedAmount}
                       placeholder="0₫"
                       style={{ width: "100%", padding: "5px 10px" }}
+                      onChange={e => {
+                        setFixedAmount(e.target.value);
+                        setEmptyFixed(false);
+                        setFixedAmountIncorect(false);
+                      }}
                     />
+                    {fixedAmountIncorect && (
+                      <span style={{ color: "red" }}>Amount incorect</span>
+                    )}
+                    {emptyFixed && (
+                      <span style={{ color: "red" }}>
+                        This field can be not empty
+                      </span>
+                    )}
                   </div>
                 )
               );
@@ -80,11 +114,25 @@ function CustomPrice() {
                     <input
                       type="number"
                       id="amount"
+                      value={percentAmount}
+                      onChange={e => {
+                        setPercentAmount(e.target.value);
+                        setEmptyPercent(false);
+                        setPercentAmountIncorect(false);
+                      }}
                       min={0}
                       max={99}
                       placeholder="%"
                       style={{ width: "100%", padding: "5px 10px" }}
                     ></input>
+                    {percentAmountIncorect && (
+                      <span style={{ color: "red" }}>Amount incorect</span>
+                    )}
+                    {emptyPercent && (
+                      <span style={{ color: "red" }}>
+                        This field can be not empty
+                      </span>
+                    )}
                   </div>
                 )
               );

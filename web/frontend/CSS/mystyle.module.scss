@@ -6,8 +6,7 @@
 }
 .output-container {
   flex: 1;
-  height: 400px;
-  background-color: blue;
+  // height: auto;
   h1 {
     font-size: 20px;
     font-weight: 700;
@@ -36,6 +35,11 @@
   input {
     width: 100%;
     margin-bottom: 12px;
+  }
+  .warning {
+    margin-top: 0 !important;
+    margin-bottom: 0;
+    color: red;
   }
 }
 .quantitybox {
@@ -68,4 +72,53 @@
 }
 .applyChoose {
   margin: 0 2.5%;
+}
+.pricing-show {
+  display: flex;
+  height: 300px;
+}
+.rule-box {
+  margin-left: 2vw;
+  button {
+    padding: 10px 10px;
+  }
+}
+
+//table
+.output-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.table-title {
+  display: block;
+  width: 80%;
+  padding: 5px 0;
+  text-align: center;
+  background-image: linear-gradient(rgb(0, 225, 255), rgb(83, 102, 122));
+  color: #fff;
+}
+.table {
+  background-color: rgba(219, 226, 230, 0.432);
+  border-bottom: 1px solid gray;
+  width: 100%;
+  thead {
+    background-color: green;
+    color: #fff;
+    font-weight: 700;
+    tr {
+      margin: 1px 1px;
+    }
+    td {
+      border-top: 1px solid gray;
+    }
+    border-top: 1px solid gray;
+  }
+  tbody {
+    border-top: 1px solid gray;
+    td {
+      border-top: 1px solid gray;
+    }
+    border-bottom: 1px solid gray !important;
+  }
 }
