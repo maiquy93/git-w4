@@ -28,9 +28,13 @@ function CollectionChoosePopup({
 
   const activator = <input onClick={openPopup} />;
 
+  useEffect(() => {
+    if (!searchValue) setSearchItem(collections?.data?.collections?.edges);
+  }, [collections]);
+
   //search products
-  const temp = collections?.data?.collections?.edges;
   const handleChangeSearchResult = () => {
+    const temp = collections?.data?.collections?.edges;
     const result = temp.filter(collection =>
       collection.node.title
         .toLowerCase()
@@ -39,7 +43,7 @@ function CollectionChoosePopup({
     setSearchItem(result);
   };
   //ready items to render
-  var items = searchItem.map(item => {
+  var items = searchItem?.map(item => {
     return {
       id: item.node.id,
       name: item.node.title,

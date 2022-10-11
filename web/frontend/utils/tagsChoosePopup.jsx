@@ -28,15 +28,19 @@ function TagsChoosePopup({
   const activator = <input onClick={openPopup} />;
 
   //search products
-  const temp = tagArray;
+  useEffect(() => {
+    if (!searchValue) setSearchItem(tagArray);
+  }, [tagArray]);
+
   const handleChangeSearchResult = () => {
+    const temp = tagArray;
     const result = temp.filter(tag =>
       tag.toLowerCase().includes(searchValue.trim().toLowerCase())
     );
     setSearchItem(result);
   };
   //ready items to render
-  const items = searchItem.map(item => {
+  const items = searchItem?.map(item => {
     return {
       id: item,
       name: item,

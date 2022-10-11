@@ -28,8 +28,12 @@ function ProductChoosePopup({
   }, [productList]);
 
   //search products
-  const temp = data.data.products.edges;
+  useEffect(() => {
+    if (!searchValue) setSearchItem(data?.data?.products?.edges);
+  }, [data]);
+
   const handleChangeSearchResult = () => {
+    const temp = data.data.products.edges;
     const result = temp.filter(product =>
       product.node.title
         .toLowerCase()

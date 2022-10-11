@@ -8,13 +8,14 @@ import CustomPrice from "../components/customPrice/customPrice";
 import { v4 as uuidv4 } from "uuid";
 import draft from "../store/drarf";
 import { useEffect } from "react";
+import { set } from "lodash";
 
 const cx = classNames.bind(styles);
 
 export default function HomePage() {
   //general
   const [name, setName] = useState("");
-  const [priority, setPriority] = useState(null);
+  const [priority, setPriority] = useState("");
   const [status, setStatus] = useState("enable");
   const [emptyName, setEmptyName] = useState(false);
   const [emptyPriority, setEmptyPriority] = useState(false);
@@ -23,6 +24,15 @@ export default function HomePage() {
   //choose product
   const [finalSelectedProduct, setFinalSelectedProduct] = useState([]);
   // console.log(finalSelectedProduct);
+
+  //rule
+  const [rules, setRule] = useState(draft);
+
+  useEffect(() => {
+    if (localStorage.getItem("rules")) {
+      setRule(JSON.parse(localStorage.getItem("rules")));
+    }
+  }, []);
 
   //Custom price
   const [singleAmount, setSingleAmount] = useState("");
@@ -58,9 +68,9 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    if (currentData.status == "enable") {
-      if (currentData.type == "single") {
-        const temp = currentData.products.map(item => {
+    if (currentData?.status == "enable") {
+      if (currentData?.type == "single") {
+        const temp = currentData?.products.map(item => {
           return {
             id: item.id,
             url: item.url,
@@ -118,8 +128,8 @@ export default function HomePage() {
     }
   }, [currentData]);
 
-  //handle click create
-  const handleCreate = () => {
+  //handle click preview
+  const handlePreview = async () => {
     //validate
     const priorityReg = "^(0?[1-9]|[1-9][0-9])$";
     const regNumber = "^[0-9]*[1-9][0-9]*$";
@@ -129,7 +139,7 @@ export default function HomePage() {
     }
     if (!name) setEmptyName(true);
     if (!priority) setEmptyPriority(true);
-    if (!priority.match(priorityReg)) setIncorectPriority(true);
+    if (priority && !priority.match(priorityReg)) setIncorectPriority(true);
     if (selected == "single" && !singleAmount) setEmptySingle(true);
     if (selected == "fixed" && !fixedAmount) setEmptyFixed(true);
     if (selected == "percent" && !percentAmount) setEmptyPercent(true);
@@ -155,11 +165,13 @@ export default function HomePage() {
         name: name,
         priority: priority,
         status: status,
-        type: selected,
+        type: "single",
         amount: singleAmount,
         products: finalSelectedProduct,
       };
+
       setCurrentData(temp);
+      return temp;
     }
     if (
       selected == "fixed" &&
@@ -174,11 +186,12 @@ export default function HomePage() {
         name: name,
         priority: priority,
         status: status,
-        type: selected,
+        type: "fixed",
         amount: fixedAmount,
         products: finalSelectedProduct,
       };
       setCurrentData(temp);
+      return temp;
     }
     if (
       selected == "percent" &&
@@ -193,16 +206,33 @@ export default function HomePage() {
         name: name,
         priority: priority,
         status: status,
-        type: selected,
+        type: "percent",
         amount: percentAmount,
         products: finalSelectedProduct,
       };
       setCurrentData(temp);
+      return temp;
     }
   };
+
+  //handle create rule
+  const handleCreate = async () => {
+    const result = await handlePreview();
+    if (result) {
+      setRule(prev => [...prev, result]);
+      const temp = [...rules, result];
+      localStorage.setItem("rules", JSON.stringify(temp));
+      setName("");
+      setPriority("");
+      setSingleAmount("");
+      setFixedAmount("");
+      setPercentAmount("");
+    }
+  };
+
   //handle select rule
   const handleSelect = id => {
-    const temp = draft.filter(rule => rule.id === id);
+    const temp = rules.filter(rule => rule.id === id);
     setCurrentData(temp[0]);
   };
 
@@ -264,6 +294,9 @@ export default function HomePage() {
                   <div className={cx("card-item", "status")}>
                     <label htmlFor="hall">Status</label>
                     <select
+                      style={{
+                        padding: "3px 0",
+                      }}
                       name="hall"
                       id="hall"
                       value={status}
@@ -323,6 +356,7 @@ export default function HomePage() {
                 <div style={{ display: "flex" }}>
                   <div style={{ width: "80%" }}></div>
                   <button
+                    className={cx("createbtn")}
                     style={{
                       display: "block",
                       flex: "1",
@@ -340,6 +374,7 @@ export default function HomePage() {
                     Create
                   </button>
                   <button
+                    className={cx("previewbtn")}
                     style={{
                       display: "block",
                       flex: "1",
@@ -352,7 +387,7 @@ export default function HomePage() {
                       borderRadius: "5px",
                       fontWeight: "600",
                     }}
-                    onClick={handleCreate}
+                    onClick={handlePreview}
                   >
                     Preview
                   </button>
@@ -368,9 +403,9 @@ export default function HomePage() {
                   Pricing Rule Preview
                 </label>
                 <div className={cx("pricing-show")}>
-                  {draft.map(rule => {
+                  {rules.map((rule, index) => {
                     return (
-                      <div className={cx("rule-box")}>
+                      <div key={index} className={cx("rule-box")}>
                         <button onClick={() => handleSelect(rule.id)}>
                           {rule.name}
                         </button>
@@ -383,9 +418,9 @@ export default function HomePage() {
           </Layout>
         </div>
         <div className={cx("output-container")}>
-          <div className={cx("table-title")}>{`Product pricing detail for ${
-            currentData.name || "Choose one "
-          }`}</div>
+          <div className={cx("table-title")}>{`Product pricing detail for "${
+            currentData?.name || "Choose one "
+          }"`}</div>
           <table className={cx("table")}>
             <thead>
               <tr>
@@ -395,9 +430,9 @@ export default function HomePage() {
               </tr>
             </thead>
             <tbody>
-              {dataRender?.map(product => {
+              {dataRender?.map((product, index) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td>{product?.title}</td>
                     <td>{product?.price}</td>
                     <td>{product?.costPrice}</td>

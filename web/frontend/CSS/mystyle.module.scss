@@ -21,6 +21,16 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  input {
+    border: 0.5px solid;
+    border-color: rgba(9, 35, 83, 0.384);
+    padding: 4px 10px;
+    outline: none;
+    &:focus {
+      outline: auto;
+      outline-color: rgba(89, 139, 204, 0.589);
+    }
+  }
 }
 .label-title {
   font-size: medium;
@@ -35,6 +45,16 @@
   input {
     width: 100%;
     margin-bottom: 12px;
+  }
+  select {
+    border: 0.5px solid;
+    border-color: rgba(9, 35, 83, 0.384);
+    padding: 4px 10px;
+    outline: none;
+    &:focus {
+      outline: auto;
+      outline-color: rgba(89, 139, 204, 0.589);
+    }
   }
   .warning {
     margin-top: 0 !important;
@@ -75,12 +95,33 @@
 }
 .pricing-show {
   display: flex;
-  height: 300px;
+  flex-wrap: wrap;
+  // justify-content: center;
+  height: 200px;
 }
 .rule-box {
   margin-left: 2vw;
   button {
     padding: 10px 10px;
+    border: none;
+    background-color: rgb(35, 136, 167);
+    color: #fff;
+    &:hover {
+      cursor: pointer;
+    }
+    &:active {
+      background-color: rgb(164, 195, 199);
+    }
+  }
+}
+.createbtn {
+  &:active {
+    background-color: rgb(137, 165, 137);
+  }
+}
+.previewbtn {
+  &:active {
+    background-color: rgb(94, 98, 100);
   }
 }
 

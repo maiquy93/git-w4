@@ -1,7 +1,7 @@
 const draft = [
   {
     id: "56cafb79-a6fe-424c-afed-186617d46c85",
-    name: "test1",
+    name: "30% sale",
     priority: "1",
     status: "enable",
     type: "percent",

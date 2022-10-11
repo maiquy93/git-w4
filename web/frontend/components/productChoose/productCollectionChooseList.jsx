@@ -26,24 +26,16 @@ import { uniqBy } from "lodash";
 const cx = classNames.bind(styles);
 
 function ProductCollectionChooseList({ setFinalSelectedProduct }) {
-  const [productsData, setProductsData] = useState([]);
+  const [productsData, setProductsData] = useState(null);
+  const [collections, setCollections] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState([]); //chi chua cac id duoc select, do thu vien
   const [productList, setProductList] = useState([]); //product cuoi cung duoc chon
   const [selectedItems, setSelectedItems] = useState([]); //state san pham duoc chon trong popup, khi click select moi set vao selectProduct
   const [selectedProductsSingle, setSelectedProductsSingle] = useState([]); //gom cac san pham duoc chon tu specific
   const [selectedProductsFromCollection, setSelectedProductsFromCollection] =
     useState([]); // gom cac san pham duoc chon tu collection
-  // const [
-  //   selectedProductsFromCollectionNoDup,
-  //   setSelectedProductsFromCollectionNoDup,
-  // ] = useState([]);
 
   const [selectedProductFromTag, setSelectedProductFromTag] = useState([]);
-
-  // const productsCollection = useMemo(() => {
-  //   const result = uniqBy(selectedProductsFromCollection, "id");
-  //   return result;
-  // }, [selectedProductsFromCollection]);
 
   //call API
   useEffect(() => {
@@ -52,12 +44,20 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
       .then(data => setProductsData(data));
   }, []);
 
+  useEffect(() => {
+    fetch("http://localhost:8000/getcollections")
+      .then(res => res.json())
+      .then(data => setCollections(data));
+  }, []);
+
   //loc lai cac gia tri tu id duoc chon
   useEffect(() => {
-    const result = productsData?.data?.products?.edges.filter(product =>
-      selectedProduct.includes(product.node.id)
-    );
-    setProductList(result);
+    if (productsData) {
+      const result = productsData?.data?.products?.edges.filter(product =>
+        selectedProduct.includes(product.node.id)
+      );
+      setProductList(result);
+    }
   }, [selectedProduct]);
 
   //loc ra cac thuoc tinh cua specific product de thiet lap discount
@@ -75,15 +75,19 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
 
   //loc all product
   const allProducts = useMemo(() => {
-    let temp = productsData?.data?.products?.edges;
-    let all = temp?.map(item => {
-      return {
-        id: item.node.id,
-        title: item.node.title,
-        url: item.node?.images?.edges[0]?.node?.url,
-        price: item.node?.priceRangeV2?.minVariantPrice?.amount,
-      };
-    });
+    let all;
+    if (productsData) {
+      let temp = productsData?.data?.products?.edges;
+      all = temp?.map(item => {
+        return {
+          id: item.node.id,
+          title: item.node.title,
+          url: item.node?.images?.edges[0]?.node?.url,
+          price: item.node?.priceRangeV2?.minVariantPrice?.amount,
+        };
+      });
+    }
+
     return all;
   }, [productsData]);
   // console.log(allProducts);
@@ -99,7 +103,7 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
   //set final selected product
   // console.log(allProducts);
   useEffect(() => {
-    if (selected == "all") {
+    if (selected == "all" && allProducts?.length > 0) {
       setFinalSelectedProduct(allProducts);
     }
     if (selected == "specific") {
@@ -122,7 +126,8 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
 
   const ProductChoose = isSelected => {
     return (
-      isSelected && (
+      isSelected &&
+      productsData && (
         <div className={cx("wrapper")}>
           <ProductChoosePopup
             data={productsData}
@@ -180,46 +185,49 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
 
   return (
     <div>
-      <ChoiceList
-        choices={[
-          { label: "All products", value: "all" },
-          {
-            label: "Specific products",
-            value: "specific",
-            renderChildren: ProductChoose,
-          },
-          {
-            label: "Product collection",
-            value: "collection",
-            renderChildren: isSelected => {
-              return (
-                isSelected && (
-                  <CollectionChoose
-                    setSelectedProductsFromCollection={
-                      setSelectedProductsFromCollection
-                    }
-                  />
-                )
-              );
+      {productsData && (
+        <ChoiceList
+          choices={[
+            { label: "All products", value: "all" },
+            {
+              label: "Specific products",
+              value: "specific",
+              renderChildren: ProductChoose,
             },
-          },
-          {
-            label: "Product tags",
-            value: "tags",
-            renderChildren: isSelected => {
-              return (
-                isSelected && (
-                  <TagsChoose
-                    setSelectedProductFromTag={setSelectedProductFromTag}
-                  />
-                )
-              );
+            {
+              label: "Product collection",
+              value: "collection",
+              renderChildren: isSelected => {
+                return (
+                  isSelected && (
+                    <CollectionChoose
+                      collections={collections}
+                      setSelectedProductsFromCollection={
+                        setSelectedProductsFromCollection
+                      }
+                    />
+                  )
+                );
+              },
             },
-          },
-        ]}
-        selected={selected}
-        onChange={handleChoiceListChange}
-      />
+            {
+              label: "Product tags",
+              value: "tags",
+              renderChildren: isSelected => {
+                return (
+                  isSelected && (
+                    <TagsChoose
+                      setSelectedProductFromTag={setSelectedProductFromTag}
+                    />
+                  )
+                );
+              },
+            },
+          ]}
+          selected={selected}
+          onChange={handleChoiceListChange}
+        />
+      )}
     </div>
   );
 }
