@@ -50,7 +50,10 @@ function CustomPrice({
                       style={{ width: "100%", padding: "5px 10px" }}
                       value={singleAmount}
                       onChange={e => {
-                        setSingleAmount(e.target.value);
+                        if (!e.target.value.startsWith("-")) {
+                          setSingleAmount(e.target.value);
+                        }
+
                         setEmptySingle(false);
                         setSingleAmountIncorect(false);
                       }}
@@ -85,7 +88,10 @@ function CustomPrice({
                       placeholder="0₫"
                       style={{ width: "100%", padding: "5px 10px" }}
                       onChange={e => {
-                        setFixedAmount(e.target.value);
+                        if (!e.target.value.startsWith("-")) {
+                          setFixedAmount(e.target.value);
+                        }
+
                         setEmptyFixed(false);
                         setFixedAmountIncorect(false);
                       }}

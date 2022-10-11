@@ -6,9 +6,8 @@ import { useState, useCallback } from "react";
 import ProductCollectionChooseList from "../components/productChoose/productCollectionChooseList";
 import CustomPrice from "../components/customPrice/customPrice";
 import { v4 as uuidv4 } from "uuid";
-import draft from "../store/drarf";
+
 import { useEffect } from "react";
-import { set } from "lodash";
 
 const cx = classNames.bind(styles);
 
@@ -26,7 +25,7 @@ export default function HomePage() {
   // console.log(finalSelectedProduct);
 
   //rule
-  const [rules, setRule] = useState(draft);
+  const [rules, setRule] = useState([]);
 
   useEffect(() => {
     if (localStorage.getItem("rules")) {
@@ -131,15 +130,17 @@ export default function HomePage() {
   //handle click preview
   const handlePreview = async () => {
     //validate
-    const priorityReg = "^(0?[1-9]|[1-9][0-9])$";
+    const priorityReg = "^([0-9]|([1-9][0-9])|100)$";
     const regNumber = "^[0-9]*[1-9][0-9]*$";
-    const percentReg = "^(100|([0-9][0-9]?(.[0-9]+)?))$";
+    const percentReg =
+      "^(100(.0{0,2}?)?$|([1-9]{0,1})([0-9]{1})((.[0-9]{0,2})|(,[0-9]{0,2}))?)$";
     if (finalSelectedProduct.length == 0) {
       alert("Please select a product to apply equal");
     }
     if (!name) setEmptyName(true);
     if (!priority) setEmptyPriority(true);
     if (priority && !priority.match(priorityReg)) setIncorectPriority(true);
+    if (priority && Number(priority) > 99) setIncorectPriority(true);
     if (selected == "single" && !singleAmount) setEmptySingle(true);
     if (selected == "fixed" && !fixedAmount) setEmptyFixed(true);
     if (selected == "percent" && !percentAmount) setEmptyPercent(true);
@@ -149,12 +150,15 @@ export default function HomePage() {
       setFixedAmountIncorect(true);
     if (selected == "percent" && !percentAmount.match(percentReg))
       setPercentAmountIncorect(true);
+    if (selected == "percent" && percentAmount && Number(percentAmount > 100))
+      setPercentAmountIncorect(true);
 
     //create rule
     if (
       selected == "single" &&
       name &&
       priority &&
+      Number(priority) < 100 &&
       singleAmount &&
       singleAmount.match(regNumber) &&
       priority.match(priorityReg) &&
@@ -177,6 +181,7 @@ export default function HomePage() {
       selected == "fixed" &&
       name &&
       priority &&
+      Number(priority) < 100 &&
       priority.match(priorityReg) &&
       fixedAmount.match(regNumber) &&
       finalSelectedProduct.length > 0
@@ -197,8 +202,10 @@ export default function HomePage() {
       selected == "percent" &&
       name &&
       priority &&
+      Number(priority) < 100 &&
       priority.match(priorityReg) &&
       percentAmount.match(percentReg) &&
+      Number(percentAmount <= 100) &&
       finalSelectedProduct.length > 0
     ) {
       const temp = {
@@ -255,7 +262,10 @@ export default function HomePage() {
                       id="name"
                       value={name}
                       onChange={e => {
-                        setName(e.target.value);
+                        if (!e.target.value.startsWith(" ")) {
+                          setName(e.target.value);
+                        }
+
                         setEmptyName(false);
                       }}
                     />
@@ -429,17 +439,19 @@ export default function HomePage() {
                 <td>Cost Price</td>
               </tr>
             </thead>
-            <tbody>
-              {dataRender?.map((product, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{product?.title}</td>
-                    <td>{product?.price}</td>
-                    <td>{product?.costPrice}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
+            {status == "enable" && (
+              <tbody>
+                {dataRender?.map((product, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{product?.title}</td>
+                      <td>{product?.price}</td>
+                      <td>{product?.costPrice}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            )}
           </table>
         </div>
       </div>

@@ -17,7 +17,6 @@ import { useState, useCallback } from "react";
 import { useEffect } from "react";
 import { uniqBy } from "lodash";
 import TagsChoosePopup from "../../utils/tagsChoosePopup";
-import Products from "../../utils/getProducts";
 import { useMemo } from "react";
 
 function TagsChoose({ setSelectedProductFromTag }) {
@@ -36,7 +35,7 @@ function TagsChoose({ setSelectedProductFromTag }) {
   //getTags
   const tagArr = useMemo(() => {
     let result = [];
-    Products?.data?.products.edges.forEach(node => {
+    data?.data?.products.edges.forEach(node => {
       result.push(...node.node.tags);
     });
     let tagArray = [];
@@ -63,7 +62,7 @@ function TagsChoose({ setSelectedProductFromTag }) {
 
   //loc ra cac product tu tags
   let result = useMemo(() => {
-    const temp = Products?.data?.products?.edges;
+    const temp = data?.data?.products?.edges;
     let firstFilter = [];
     selectedItems.forEach(tag => {
       temp.forEach(product => {
