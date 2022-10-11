@@ -19,9 +19,16 @@ import { useEffect } from "react";
 
 const cx = classNames.bind(styles);
 
-function CollectionChoose({ setSelectedProductsFromCollection, collections }) {
-  const [selectedCollection, setSelectedCollection] = useState([]); //chi chua cac id duoc select, do thu vien
-  const [collectionList, setCollectionList] = useState([]); //collections cuoi cung duoc chon
+function CollectionChoose({
+  setSelectedProductsFromCollection,
+  collections,
+  collectionList,
+  setCollectionList,
+  selectedCollection,
+  setSelectedCollection,
+}) {
+  // const [selectedCollection, setSelectedCollection] = useState([]); //chi chua cac id duoc select, do thu vien
+  // const [collectionList, setCollectionList] = useState([]); //collections cuoi cung duoc chon
   const [selectedItems, setSelectedItems] = useState([]); //state san pham duoc chon trong popup, khi click select moi set vao selectProduct
 
   //loc lai cac gia tri tu id duoc chon

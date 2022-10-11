@@ -19,18 +19,17 @@ import { uniqBy } from "lodash";
 import TagsChoosePopup from "../../utils/tagsChoosePopup";
 import { useMemo } from "react";
 
-function TagsChoose({ setSelectedProductFromTag }) {
-  const [data, setData] = useState([]);
+function TagsChoose({
+  setSelectedProductFromTag,
+  data,
+  selectedTags,
+  setSelectedTags,
+  selectedItemsSave,
+  setSelectedItemsSave,
+}) {
   const [selected, setSelected] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
-
-  //call API
-  useEffect(() => {
-    fetch("http://localhost:8000/getproducts")
-      .then(res => res.json())
-      .then(data => setData(data));
-  }, []);
+  // const [selectedTags, setSelectedTags] = useState([]);
+  // const [selectedItemsSave, setSelectedItemsSave] = useState([]);
 
   //getTags
   const tagArr = useMemo(() => {
@@ -47,24 +46,24 @@ function TagsChoose({ setSelectedProductFromTag }) {
   // console.log(tagArr);
 
   useEffect(() => {
-    setSelectedTags(selectedItems);
-  }, [selectedItems]);
+    setSelectedTags(selectedItemsSave);
+  }, [selectedItemsSave]);
 
   const removeTag = useCallback(
     tag => () => {
-      setSelectedItems(selectedItems.filter(item => item !== tag));
+      setSelectedItemsSave(selectedItemsSave.filter(item => item !== tag));
       setSelectedTags(previousTags =>
         previousTags.filter(previousTag => previousTag !== tag)
       );
     },
-    [selectedItems]
+    [selectedItemsSave]
   );
 
   //loc ra cac product tu tags
   let result = useMemo(() => {
     const temp = data?.data?.products?.edges;
     let firstFilter = [];
-    selectedItems.forEach(tag => {
+    selectedItemsSave.forEach(tag => {
       temp.forEach(product => {
         if (product.node.tags.includes(tag)) firstFilter.push(product.node);
       });
@@ -80,7 +79,7 @@ function TagsChoose({ setSelectedProductFromTag }) {
       };
     });
     return result;
-  }, [selectedItems]);
+  }, [selectedItemsSave]);
 
   useEffect(() => {
     setSelectedProductFromTag(result);
@@ -96,8 +95,8 @@ function TagsChoose({ setSelectedProductFromTag }) {
     <div>
       <TagsChoosePopup
         tagArray={tagArr}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
+        selectedItems={selectedItemsSave}
+        setSelectedItems={setSelectedItemsSave}
         setSelected={setSelected}
       />
       <Stack spacing="tight">{tagMarkup}</Stack>

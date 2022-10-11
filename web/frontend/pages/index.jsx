@@ -131,7 +131,7 @@ export default function HomePage() {
   const handlePreview = async () => {
     //validate
     const priorityReg = "^([0-9]|([1-9][0-9])|100)$";
-    const regNumber = "^[0-9]*[1-9][0-9]*$";
+    const regNumber = "^[+-]?(([1-9][0-9]*)?[0-9](.[0-9]*)?|.[0-9]+)$";
     const percentReg =
       "^(100(.0{0,2}?)?$|([1-9]{0,1})([0-9]{1})((.[0-9]{0,2})|(,[0-9]{0,2}))?)$";
     if (finalSelectedProduct.length == 0) {
@@ -144,11 +144,15 @@ export default function HomePage() {
     if (selected == "single" && !singleAmount) setEmptySingle(true);
     if (selected == "fixed" && !fixedAmount) setEmptyFixed(true);
     if (selected == "percent" && !percentAmount) setEmptyPercent(true);
-    if (selected == "single" && !singleAmount.match(regNumber))
+    if (selected == "single" && singleAmount && !singleAmount.match(regNumber))
       setSingleAmountIncorect(true);
-    if (selected == "fixed" && !fixedAmount.match(regNumber))
+    if (selected == "fixed" && fixedAmount && !fixedAmount.match(regNumber))
       setFixedAmountIncorect(true);
-    if (selected == "percent" && !percentAmount.match(percentReg))
+    if (
+      selected == "percent" &&
+      percentAmount &&
+      !percentAmount.match(percentReg)
+    )
       setPercentAmountIncorect(true);
     if (selected == "percent" && percentAmount && Number(percentAmount > 100))
       setPercentAmountIncorect(true);
@@ -182,6 +186,7 @@ export default function HomePage() {
       name &&
       priority &&
       Number(priority) < 100 &&
+      fixedAmount &&
       priority.match(priorityReg) &&
       fixedAmount.match(regNumber) &&
       finalSelectedProduct.length > 0
@@ -229,11 +234,6 @@ export default function HomePage() {
       setRule(prev => [...prev, result]);
       const temp = [...rules, result];
       localStorage.setItem("rules", JSON.stringify(temp));
-      setName("");
-      setPriority("");
-      setSingleAmount("");
-      setFixedAmount("");
-      setPercentAmount("");
     }
   };
 

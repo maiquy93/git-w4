@@ -26,8 +26,18 @@ import { uniqBy } from "lodash";
 const cx = classNames.bind(styles);
 
 function ProductCollectionChooseList({ setFinalSelectedProduct }) {
+  //state call API
   const [productsData, setProductsData] = useState(null);
   const [collections, setCollections] = useState(null);
+
+  //save collections state when unmount
+  const [collectionList, setCollectionList] = useState([]);
+  const [selectedCollection, setSelectedCollection] = useState([]);
+
+  //save tags state when unmount component
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedItemsSave, setSelectedItemsSave] = useState([]);
+
   const [selectedProduct, setSelectedProduct] = useState([]); //chi chua cac id duoc select, do thu vien
   const [productList, setProductList] = useState([]); //product cuoi cung duoc chon
   const [selectedItems, setSelectedItems] = useState([]); //state san pham duoc chon trong popup, khi click select moi set vao selectProduct
@@ -205,6 +215,10 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
                       setSelectedProductsFromCollection={
                         setSelectedProductsFromCollection
                       }
+                      collectionList={collectionList}
+                      setCollectionList={setCollectionList}
+                      selectedCollection={selectedCollection}
+                      setSelectedCollection={setSelectedCollection}
                     />
                   )
                 );
@@ -218,6 +232,11 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
                   isSelected && (
                     <TagsChoose
                       setSelectedProductFromTag={setSelectedProductFromTag}
+                      data={productsData}
+                      selectedTags={selectedTags}
+                      setSelectedTags={setSelectedTags}
+                      selectedItemsSave={selectedItemsSave}
+                      setSelectedItemsSave={setSelectedItemsSave}
                     />
                   )
                 );
