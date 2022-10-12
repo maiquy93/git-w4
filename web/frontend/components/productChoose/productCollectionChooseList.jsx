@@ -78,6 +78,7 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
         title: item.node.title,
         url: item.node?.images?.edges[0]?.node?.url,
         price: item.node?.priceRangeV2?.minVariantPrice?.amount,
+        currencyCode: item.node?.priceRangeV2?.minVariantPrice?.currencyCode,
       };
     });
     setSelectedProductsSingle(products);
@@ -94,6 +95,7 @@ function ProductCollectionChooseList({ setFinalSelectedProduct }) {
           title: item.node.title,
           url: item.node?.images?.edges[0]?.node?.url,
           price: item.node?.priceRangeV2?.minVariantPrice?.amount,
+          currencyCode: item.node?.priceRangeV2?.minVariantPrice?.currencyCode,
         };
       });
     }

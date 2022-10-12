@@ -45,7 +45,7 @@ function CustomPrice({
                     <br />
                     <input
                       id="amount"
-                      placeholder="0₫"
+                      placeholder=""
                       type="number"
                       style={{ width: "100%", padding: "5px 10px" }}
                       value={singleAmount}
@@ -85,7 +85,7 @@ function CustomPrice({
                       type="number"
                       id="amount"
                       value={fixedAmount}
-                      placeholder="0₫"
+                      placeholder=""
                       style={{ width: "100%", padding: "5px 10px" }}
                       onChange={e => {
                         if (!e.target.value.startsWith("-")) {

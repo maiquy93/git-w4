@@ -76,6 +76,7 @@ function TagsChoose({
         title: item.title,
         url: item.images.edges[0].node.url,
         price: item?.priceRangeV2?.minVariantPrice.amount,
+        currencyCode: item?.priceRangeV2?.minVariantPrice?.currencyCode,
       };
     });
     return result;

@@ -22,7 +22,7 @@ export default function HomePage() {
 
   //choose product
   const [finalSelectedProduct, setFinalSelectedProduct] = useState([]);
-  // console.log(finalSelectedProduct);
+  console.log(finalSelectedProduct);
 
   //rule
   const [rules, setRule] = useState([]);
@@ -79,6 +79,7 @@ export default function HomePage() {
               Number(currentData.amount)
             ),
             costPrice: Number(item.price),
+            currencyCode: item.currencyCode,
           };
         });
         setDataRender(temp);
@@ -94,6 +95,7 @@ export default function HomePage() {
               Number(currentData.amount)
             ),
             costPrice: Number(item.price),
+            currencyCode: item.currencyCode,
           };
         });
         setDataRender(temp);
@@ -109,6 +111,7 @@ export default function HomePage() {
               Number(currentData.amount)
             ),
             costPrice: Number(item.price),
+            currencyCode: item.currencyCode,
           };
         });
         setDataRender(temp);
@@ -121,6 +124,7 @@ export default function HomePage() {
           title: item.title,
           price: Number(item.price),
           costPrice: Number(item.price),
+          currencyCode: item.currencyCode,
         };
       });
       setDataRender(temp);
@@ -445,8 +449,8 @@ export default function HomePage() {
                   return (
                     <tr key={index}>
                       <td>{product?.title}</td>
-                      <td>{product?.price}</td>
-                      <td>{product?.costPrice}</td>
+                      <td>{`${product?.price} ${product.currencyCode}`}</td>
+                      <td>{`${product?.costPrice} ${product.currencyCode}`}</td>
                     </tr>
                   );
                 })}

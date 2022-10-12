@@ -51,9 +51,10 @@ function CollectionChoose({
     const products = filter.map(item => {
       return {
         id: item.node.id,
-        title: item.node.title,
-        price: item.node.priceRangeV2.minVariantPrice.amount,
-        url: item.node.images.edges[0].node.url,
+        title: item?.node.title,
+        price: item?.node.priceRangeV2.minVariantPrice.amount,
+        url: item?.node.images.edges[0].node.url,
+        currencyCode: item?.node?.priceRangeV2.minVariantPrice.currencyCode,
       };
     });
     setSelectedProductsFromCollection(products);
